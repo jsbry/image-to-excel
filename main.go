@@ -37,25 +37,6 @@ type ByName struct {
 func main() {
 	var now string = time.Now().Format("20060102 150405")
 
-	// xlsx := excelize.NewFile()
-	// xlsx.SetColWidth("Sheet1", "A", "A", 2.5)
-	// xlsx.SetColWidth("Sheet1", "D", "D", 12.1)
-	// xlsx.SetColWidth("Sheet1", "H", "H", 2.1)
-	// xlsx.SetColWidth("Sheet1", "K", "K", 4.9)
-	// xlsx.SetColWidth("Sheet1", "L", "L", 6.6)
-	//
-	// for n := 0; n <= 601; n++ {
-	// 	xlsx.SetRowHeight("Sheet1", n, 14.5)
-	// }
-
-	// err := tmp_xlsx.SaveAs("tmp.xlsx")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
-	// defer os.Remove("tmp.xlsx")
-	// //time.Sleep(10 * time.Second)
-
 	xlsx, err := excelize.OpenFile("tmp/tmp.xlsx")
 	if err != nil {
 		fmt.Println("excelize.OpenFile :", err)
@@ -155,46 +136,13 @@ func main() {
 			image_format := fmt.Sprintf(addpicture_format, string_image_w, string_image_h)
 			//fmt.Println(image_format)
 
-			for i := 1; i <= 18; i++ {
-				cell_start++
-				//xlsx.MergeCell("Sheet1", fmt.Sprintf("I%d", cell_start), fmt.Sprintf("L%d", cell_start))
-				switch i {
-				// case 1:
-				// style, err := xlsx.NewStyle(`{"border":[` + border_left + `,` + border_top + `,` + border_right + `]}`)
-				// if err != nil {
-				// 	fmt.Println(err)
-				// }
-				// xlsx.MergeCell("Sheet1", fmt.Sprintf("I%d", cell_start), fmt.Sprintf("L%d", cell_start))
-				// xlsx.SetCellStyle("Sheet1", fmt.Sprintf("I%d", cell_start), fmt.Sprintf("L%d", cell_start), style)
-
-				// break
-				case 18:
-					//xlsx.MergeCell("Sheet1", fmt.Sprintf("B%d", cell_start-17), fmt.Sprintf("G%d", cell_start))
-
-					err = xlsx.AddPicture("Sheet1", fmt.Sprintf("B%d", cell_start-17), dstName, image_format)
-					if err != nil {
-						fmt.Println("貼り付けエラー :", err)
-						continue
-					}
-
-					// style, err := xlsx.NewStyle(`{"border":[` + border_left + `,` + border_bottom + `,` + border_right + `]}`)
-					// if err != nil {
-					// 	fmt.Println(err)
-					// }
-					// xlsx.MergeCell("Sheet1", fmt.Sprintf("I%d", cell_start), fmt.Sprintf("L%d", cell_start))
-					// xlsx.SetCellStyle("Sheet1", fmt.Sprintf("I%d", cell_start), fmt.Sprintf("L%d", cell_start), style)
-					break
-					// default:
-					// style, err := xlsx.NewStyle(`{"border":[` + border_left + `,` + border_right + `]}`)
-					// if err != nil {
-					// 	fmt.Println(err)
-					// }
-					// xlsx.MergeCell("Sheet1", fmt.Sprintf("I%d", cell_start), fmt.Sprintf("L%d", cell_start))
-					// xlsx.SetCellStyle("Sheet1", fmt.Sprintf("I%d", cell_start), fmt.Sprintf("L%d", cell_start), style)
-					// break
-				}
+			cell_start++
+			err = xlsx.AddPicture("Sheet1", fmt.Sprintf("B%d", cell_start), dstName, image_format)
+			if err != nil {
+				fmt.Println("貼り付けエラー :", err)
+				continue
 			}
-			cell_start += 1
+			cell_start += 18
 
 			defer os.Remove(dstName)
 
@@ -210,19 +158,6 @@ func main() {
 			os.Exit(1)
 		}
 	}
-}
-
-func (fi ByName) Len() int {
-	return len(fi.FileInfos)
-}
-func (fi ByName) Swap(i, j int) {
-	fi.FileInfos[i], fi.FileInfos[j] = fi.FileInfos[j], fi.FileInfos[i]
-}
-func (fi ByName) Less(i, j int) bool {
-	// 古い順
-	return fi.FileInfos[j].ModTime().Unix() > fi.FileInfos[i].ModTime().Unix()
-	// 新しい順
-	// return fi.FileInfos[j].ModTime().Unix() > fi.FileInfos[i].ModTime().Unix()
 }
 
 // 指定されたファイル名がディレクトリかどうか調べる
@@ -271,9 +206,6 @@ func FileList() (FileInfos, string) {
 		fmt.Errorf("ディレクトリの読み込みに失敗しました。 %s\n", err)
 		os.Exit(1)
 	}
-
-	// ファイル情報を一つずつ表示する
-	// sort.Sort(ByName{fileInfos})
 
 	return fileInfos, filePattern
 }
