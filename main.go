@@ -37,7 +37,7 @@ type ByName struct {
 func main() {
 	var now string = time.Now().Format("20060102 150405")
 
-	xlsx, err := excelize.OpenFile("tmp/tmp.xlsx")
+	xlsx, err := excelize.OpenFile("tmp.xlsx")
 	if err != nil {
 		fmt.Println("excelize.OpenFile :", err)
 	}
