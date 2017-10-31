@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
-func TestPASS(t *testing.T) {
+func Test_ImgFileList(t *testing.T) {
 	paths, err := ImgFileList()
 	if err != nil {
 		t.Error(err)
@@ -14,4 +15,12 @@ func TestPASS(t *testing.T) {
 			fmt.Println(path)
 		}
 	}
+}
+
+func Test_Run(t *testing.T) {
+	code, err := Run()
+	if err != nil {
+		t.Error(err)
+	}
+	os.Exit(code)
 }

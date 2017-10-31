@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"image"
 	_ "image/gif"
@@ -29,60 +30,54 @@ var (
 	border_bottom = `{"type":"bottom","color":"000000","style":1}`
 )
 
-type FileInfos []os.FileInfo
-type ByName struct {
-	FileInfos
+func main() {
+	code, err := Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+	os.Exit(code)
 }
 
-func main() {
+func Run() (int, error) {
 	var now string = time.Now().Format("20060102 150405")
 
 	xlsx, err := excelize.OpenFile("tmp.xlsx")
 	if err != nil {
-		fmt.Println("excelize.OpenFile :", err)
+		fmt.Println(err)
+		return 1, errors.New("テンプレートファイルの読み込みに失敗しました")
 	}
 
 	addpicture_format := `{"x_scale": %s, "y_scale": %s, "print_obj": true, "lock_aspect_ratio": false, "locked": false}`
 
-	files, filePattern := FileList()
-	for _, fileInfo := range files {
-		// *FileInfo型
-		var findName = (fileInfo).Name()
-		var matched = true
-		// lsのようなワイルドカード検索を行うため、path.Matchを呼び出す
-		if filePattern != "" {
-			matched, _ = path.Match(filePattern, findName)
-		}
-		// path.Matchでマッチした場合、ファイル名を表示
-		if matched != true {
-			continue
-		}
+	paths, err := ImgFileList()
+	if err != nil {
+		fmt.Println(err)
+		return 1, errors.New("画像リスト取得に失敗しました")
+	}
 
-		// フォルダ判定
-		var isDir, _ = IsDirectory(findName)
-		if isDir == true {
-			continue
-		}
-		pos := strings.LastIndex(findName, ".")
-		ext := findName[pos:]
+	fmt.Println(len(paths))
+	for i, path := range paths {
+		fmt.Println(i)
+		pos := strings.LastIndex(path, ".")
+		ext := path[pos:]
 		lowerEXT := strings.ToLower(ext)
 
 		if lowerEXT == ".png" || lowerEXT == ".jpg" || lowerEXT == ".jpeg" || lowerEXT == ".gif" {
-			fmt.Printf("%s\n", findName)
+			fmt.Printf("%s\n", path)
 			var dstName string
 			switch ext {
 			case ".PNG":
-				dstName = now + strings.Replace(findName, ext, ".png", -1)
+				dstName = now + strings.Replace(path, ext, ".png", -1)
 			case ".JPG":
-				dstName = now + strings.Replace(findName, ext, ".jpg", -1)
+				dstName = now + strings.Replace(path, ext, ".jpg", -1)
 			case ".JPEG":
-				dstName = now + strings.Replace(findName, ext, ".jpeg", -1)
+				dstName = now + strings.Replace(path, ext, ".jpeg", -1)
 			case ".GIF":
-				dstName = now + strings.Replace(findName, ext, ".gif", -1)
+				dstName = now + strings.Replace(path, ext, ".gif", -1)
 			default:
-				dstName = now + strings.Replace(findName, ext, ext, -1)
+				dstName = now + strings.Replace(path, ext, ext, -1)
 			}
-			src, err := os.Open(findName)
+			src, err := os.Open(path)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -134,7 +129,6 @@ func main() {
 			string_image_h := strconv.FormatFloat(heightRatio, 'f', 10, 64)
 
 			image_format := fmt.Sprintf(addpicture_format, string_image_w, string_image_h)
-			//fmt.Println(image_format)
 
 			cell_start++
 			err = xlsx.AddPicture("Sheet1", fmt.Sprintf("B%d", cell_start), dstName, image_format)
@@ -155,59 +149,10 @@ func main() {
 		err := xlsx.SaveAs("写真貼付#" + now + ".xlsx")
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(1)
+			return 1, errors.New("生成したExcelの保存に失敗しました")
 		}
 	}
-}
-
-// 指定されたファイル名がディレクトリかどうか調べる
-func IsDirectory(name string) (isDir bool, err error) {
-	fInfo, err := os.Stat(name)
-	if err != nil {
-		return false, err
-	}
-	return fInfo.IsDir(), nil
-}
-
-func FileList() (FileInfos, string) {
-	var arg string
-
-	// カレントディレクトリの取得
-	var curDir, _ = os.Getwd()
-	curDir += "/"
-
-	// 引数が取得できなければ、カレントディレクトリを使用
-	if arg == "" {
-		arg = curDir
-	}
-
-	// ディレクトリとファイル名に分割して格納
-	var dirName, filePattern = path.Split(arg)
-
-	// ディレクトリが無いならばカレントディレクトリを使用
-	if dirName == "" {
-		dirName = curDir
-	}
-
-	// 取得しようとしているパスがディレクトリかチェック
-	var isDir, _ = IsDirectory(dirName + filePattern)
-
-	// ディレクトリならば、そのディレクトリ配下のファイルを調べる。
-	if isDir == true {
-		dirName = dirName + filePattern
-		filePattern = ""
-	}
-
-	// ディレクトリ内のファイル情報の読み込み[] *os.FileInfoが返る。
-	fileInfos, err := ioutil.ReadDir(dirName)
-
-	// ディレクトリの読み込みに失敗したらエラーで終了
-	if err != nil {
-		fmt.Errorf("ディレクトリの読み込みに失敗しました。 %s\n", err)
-		os.Exit(1)
-	}
-
-	return fileInfos, filePattern
+	return 0, nil
 }
 
 func ImgFileList() ([]string, error) {
