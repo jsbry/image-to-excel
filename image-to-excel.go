@@ -209,3 +209,23 @@ func FileList() (FileInfos, string) {
 
 	return fileInfos, filePattern
 }
+
+func ImgFileList() ([]string, error) {
+	dir, _ := os.Getwd()
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return []string{}, err
+	}
+
+	var paths []string
+	for _, file := range files {
+		if !file.IsDir() {
+			lowerEXT := strings.ToLower(path.Ext(file.Name()))
+			if lowerEXT == ".png" || lowerEXT == ".jpg" || lowerEXT == ".jpeg" || lowerEXT == ".gif" {
+				paths = append(paths, file.Name())
+			}
+		}
+	}
+
+	return paths, nil
+}
