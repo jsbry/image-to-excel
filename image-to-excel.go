@@ -55,7 +55,14 @@ func Run() (int, error) {
 		return 1, errors.New("画像リスト取得に失敗しました")
 	}
 
-	fmt.Println(len(paths))
+	// 4枚ごとにSheet追加 #debug
+	imageCount := len(paths) / 4
+	fmt.Println(imageCount)
+	for idx := 1; idx <= imageCount; idx++ {
+		to_idx := xlsx.NewSheet(fmt.Sprintf("Sheet%d", 1+idx))
+		err = xlsx.CopySheet(1, to_idx)
+	}
+
 	for i, path := range paths {
 		fmt.Println(i)
 		pos := strings.LastIndex(path, ".")
