@@ -22,6 +22,7 @@ var image_w = 412.0
 var output = 0
 var cell_start = 3
 var ss = 0
+var sheet_slice = 3
 
 var (
 	border_top    = `{"type":"top","color":"000000","style":1}`
@@ -56,15 +57,22 @@ func Run() (int, error) {
 	}
 
 	// 4枚ごとにSheet追加 #debug
-	imageCount := len(paths) / 4
-	fmt.Println(imageCount)
-	for idx := 1; idx <= imageCount; idx++ {
+	shhetCount := len(paths) / sheet_slice
+	fmt.Println("shhetCount:", shhetCount)
+	for idx := 1; idx <= shhetCount; idx++ {
 		to_idx := xlsx.NewSheet(fmt.Sprintf("Sheet%d", 1+idx))
 		err = xlsx.CopySheet(1, to_idx)
 	}
 
+	SheetCell := make(map[string]int)
 	for i, path := range paths {
-		fmt.Println(i)
+		slice_num := i / sheet_slice
+		Sheet_name := fmt.Sprintf("Sheet%d", (slice_num + 1))
+		_, sheet_exists := SheetCell[Sheet_name]
+		if sheet_exists == false {
+			SheetCell[Sheet_name] = cell_start
+		}
+
 		pos := strings.LastIndex(path, ".")
 		ext := path[pos:]
 		lowerEXT := strings.ToLower(ext)
@@ -137,13 +145,13 @@ func Run() (int, error) {
 
 			image_format := fmt.Sprintf(addpicture_format, string_image_w, string_image_h)
 
-			cell_start++
-			err = xlsx.AddPicture("Sheet1", fmt.Sprintf("B%d", cell_start), dstName, image_format)
+			SheetCell[Sheet_name]++
+			err = xlsx.AddPicture(Sheet_name, fmt.Sprintf("B%d", SheetCell[Sheet_name]), dstName, image_format)
 			if err != nil {
 				fmt.Println("貼り付けエラー :", err)
 				continue
 			}
-			cell_start += 18
+			SheetCell[Sheet_name] += 18
 
 			defer os.Remove(dstName)
 
