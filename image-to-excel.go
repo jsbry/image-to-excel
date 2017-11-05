@@ -173,6 +173,9 @@ func Run() (int, error) {
 	return 0, nil
 }
 
+/**
+ * 画像一覧
+ */
 func ImgFileList() ([]string, error) {
 	dir, _ := os.Getwd()
 	files, err := ioutil.ReadDir(dir)

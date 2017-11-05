@@ -1,11 +1,15 @@
 # image-to-excel
 
 ## 課題
-+ 30枚以上になったら次のシートにいきたい `進行中`
 + 3枚未満でも次のページに配置できるようにしたい
   + guiでimageのviewを出せるか？
 
 ## 変更履歴
+
+### Ver.0.8.0
++ tmp.xlsxをimagetoexcel.exeと同じ場所に配置する必要あり
++ 30枚以上になったら次のシートにいきたい
+
 
 ### Ver.0.7.0
 + tmp.xlsxをimagetoexcel.exeと同じ場所に配置する必要あり
