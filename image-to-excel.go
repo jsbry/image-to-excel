@@ -58,7 +58,6 @@ func Run() (int, error) {
 
 	// 4枚ごとにSheet追加 #debug
 	shhetCount := len(paths) / sheet_slice
-	fmt.Println("shhetCount:", shhetCount)
 	for idx := 1; idx <= shhetCount; idx++ {
 		copy_sheetname := fmt.Sprintf("Sheet%d", idx)
 		if copy_sheetname == "Sheet1" {
