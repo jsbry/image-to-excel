@@ -9,6 +9,7 @@ import (
 	_ "image/png"
 	"io"
 	"io/ioutil"
+	"math"
 	"os"
 	"path"
 	"strconv"
@@ -57,8 +58,8 @@ func Run() (int, error) {
 	}
 
 	// 4枚ごとにSheet追加 #debug
-	shhetCount := len(paths) / sheet_slice
-	for idx := 1; idx <= shhetCount; idx++ {
+	sheetCount := float64(len(paths)) / float64(sheet_slice)
+	for idx := 1; idx <= int(math.Ceil(sheetCount)); idx++ {
 		copy_sheetname := fmt.Sprintf("Sheet%d", idx)
 		if copy_sheetname == "Sheet1" {
 			continue
