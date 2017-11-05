@@ -22,7 +22,7 @@ var image_w = 412.0
 var output = 0
 var cell_start = 3
 var ss = 0
-var sheet_slice = 3
+var sheet_slice = 30
 
 var (
 	border_top    = `{"type":"top","color":"000000","style":1}`
@@ -60,7 +60,11 @@ func Run() (int, error) {
 	shhetCount := len(paths) / sheet_slice
 	fmt.Println("shhetCount:", shhetCount)
 	for idx := 1; idx <= shhetCount; idx++ {
-		to_idx := xlsx.NewSheet(fmt.Sprintf("Sheet%d", 1+idx))
+		copy_sheetname := fmt.Sprintf("Sheet%d", idx)
+		if copy_sheetname == "Sheet1" {
+			continue
+		}
+		to_idx := xlsx.NewSheet(fmt.Sprintf("Sheet%d", idx))
 		err = xlsx.CopySheet(1, to_idx)
 	}
 
