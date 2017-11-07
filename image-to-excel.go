@@ -23,7 +23,7 @@ var image_w = 412.0
 var output = 0
 var cell_start = 3
 var ss = 0
-var sheet_slice = 30
+var sheet_slice = 3
 
 var (
 	border_top    = `{"type":"top","color":"000000","style":1}`
@@ -43,7 +43,7 @@ func main() {
 func Run() (int, error) {
 	var now string = time.Now().Format("20060102 150405")
 
-	xlsx, err := excelize.OpenFile("tmp.xlsx")
+	xlsx, err := excelize.OpenFile("tmp.xlsm")
 	if err != nil {
 		fmt.Println(err)
 		return 1, errors.New("テンプレートファイルの読み込みに失敗しました")
@@ -165,7 +165,7 @@ func Run() (int, error) {
 
 	// 保存
 	if output > 0 {
-		err := xlsx.SaveAs("写真貼付#" + now + ".xlsx")
+		err := xlsx.SaveAs("写真貼付#" + now + ".xlsm")
 		if err != nil {
 			fmt.Println(err)
 			return 1, errors.New("生成したExcelの保存に失敗しました")
