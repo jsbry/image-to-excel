@@ -23,7 +23,7 @@ var image_w = 412.0
 var output = 0
 var cell_start = 3
 var ss = 0
-var sheet_slice = 3
+var sheet_slice = 2
 
 var (
 	border_top    = `{"type":"top","color":"000000","style":1}`
