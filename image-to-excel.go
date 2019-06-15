@@ -16,10 +16,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/xuri/excelize"
+	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
-var image_w = 412.0
+var image_w = 387.0
 var output = 0
 var cell_start = 3
 var ss = 0
@@ -55,6 +55,9 @@ func Run() (int, error) {
 	if err != nil {
 		fmt.Println(err)
 		return 1, errors.New("画像リスト取得に失敗しました")
+	}
+	if len(paths) == 0 {
+		return 1, errors.New("画像が1枚も見つかりませんでした")
 	}
 
 	// 4枚ごとにSheet追加 #debug
