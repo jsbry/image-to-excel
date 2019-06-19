@@ -18,7 +18,7 @@ func Test_ImgFileList(t *testing.T) {
 }
 
 func Test_Run(t *testing.T) {
-	code, err := Run()
+	code, err := Run(default_image_w)
 	if err != nil {
 		t.Error(err)
 	}
