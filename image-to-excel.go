@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"image"
@@ -19,7 +20,7 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
-var image_w = 387.0
+var default_image_w = 387.0
 var output = 0
 var cell_start = 3
 var ss = 0
@@ -33,14 +34,25 @@ var (
 )
 
 func main() {
-	code, err := Run()
+	fmt.Print("画像の幅(default:387) => ")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+
+	var image_w float64
+	if scanner.Text() != "" {
+		image_w, _ = strconv.ParseFloat(scanner.Text(), 64)
+	} else {
+		image_w = default_image_w
+	}
+
+	code, err := Run(image_w)
 	if err != nil {
 		fmt.Println(err)
 	}
 	os.Exit(code)
 }
 
-func Run() (int, error) {
+func Run(image_w float64) (int, error) {
 	var now string = time.Now().Format("20060102 150405")
 
 	xlsx, err := excelize.OpenFile("tmp.xlsx")
